@@ -4,6 +4,7 @@ import os
 
 from dotenv import load_dotenv
 from sys import argv
+
 dotenv_path = '.env'
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
