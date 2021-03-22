@@ -1,5 +1,10 @@
 FROM ubuntu:20.04
 
+EXPOSE 80
+EXPOSE 8080
+EXPOSE 8545
+EXPOSE 443
+
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install python3 python3-pip -y

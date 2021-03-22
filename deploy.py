@@ -17,11 +17,11 @@ def deploy_bridge(side):
     w3 = web3.Web3(web3.HTTPProvider(os.environ[side + '_RPCURL']))
     master_account = w3.eth.account.from_key(os.environ['PRIVKEY'])
     gas_price = int(os.environ[side + '_GASPRICE'])
-    solc_version = os.environ['SOLIDITY'].replace("v", "")
+    solc_version = "0.6.0"
     solcx.install_solc(solc_version)
 
-    compiled_code = "ValidatorsManagement.sol:ValidatorsManagement"
-    compiled_contract = solcx.compile_files('ValidatorsManagement.sol', output_values=["abi", "bin"], solc_version=solc_version)
+    compiled_code = "deployment/ValidatorsManagement.sol:ValidatorsManagement"
+    compiled_contract = solcx.compile_files('deployment/ValidatorsManagement.sol', output_values=["abi", "bin"], solc_version=solc_version)
     ABI = compiled_contract[compiled_code]['abi']
     BYTECODE = compiled_contract[compiled_code]['bin']
     contract = w3.eth.contract(abi=ABI, bytecode=BYTECODE)
@@ -50,8 +50,8 @@ def deploy_bridge(side):
         print(f"#3 [RIGTH] Validators Set deployed at {contract_id}")
     validator = contract_id
 
-    compiled_code = "Bridge.sol:Bridge"
-    compiled_contract = solcx.compile_files('Bridge.sol', output_values=["abi", "bin"], solc_version=solc_version)
+    compiled_code = "deployment/Bridge.sol:Bridge"
+    compiled_contract = solcx.compile_files('deployment/Bridge.sol', output_values=["abi", "bin"], solc_version=solc_version)
     ABI = compiled_contract[compiled_code]['abi']
     BYTECODE = compiled_contract[compiled_code]['bin']
 
