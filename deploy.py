@@ -4,9 +4,13 @@ import os
 
 from dotenv import load_dotenv
 from sys import argv
-dotenv_path = '.env'
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
+
+try:
+    dotenv_path = '.env'
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path)
+except:
+    pass
 
 validators = list(set(os.environ['VALIDATORS'].split(" ")))
 threshold = int(os.environ['THRESHOLD'])
