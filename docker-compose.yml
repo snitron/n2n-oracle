@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  oracle:
+    build: .
+    container_name: oracle
+    image: n2n-oracle:latest
+    env_file: .env

@@ -1,0 +1,69 @@
+image: docker:latest
+
+services:
+    - docker:dind
+
+stages:
+    - test
+  
+variables:
+    GIT_DEPTH: "1"
+    GIT_STRATEGY: clone
+    GIT_SUBMODULE_STRATEGY: none
+
+    # TAG and IMAGE are used by docker-compose.yml.
+    TAG: latest
+    IMAGE: $CI_REGISTRY_IMAGE/ftchecker-final2021-n2n-oracle
+  
+    # Is used by docker-compose.yml.
+    SOLUTION_PATH: ../$CI_PROJECT_NAME
+
+before_script:
+    # Install docker compose and ssh.
+    - apk add --no-cache docker-compose git openssh-client
+
+    # Login.
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+    # Checker image.
+    - docker pull $IMAGE:$TAG || true
+
+    # For checker.
+    - cd ..
+    
+    # Directory with docker-compose.yml
+    - mkdir checker
+
+    # Now we are in checker repository.
+    - cd checker
+
+    # Create a container.
+    - id=$(docker create $IMAGE:$TAG)
+    # Copy docker-compose.yml.
+    - docker container cp $id:/home/n2n-oracle/docker-compose.yml docker-compose.yml
+    # Remove the container.
+    - docker rm -v $id
+
+
+test:
+    stage: test
+
+    script:
+        # Run tests.
+        - docker-compose -p ftchecker up -d
+        # Logs.                  
+        - docker logs -f ftchecker_n2n-oracle_1
+        # Stop containers.
+        - docker-compose stop
+
+        # Copy logs.
+        - cp -r ./logs ../$CI_PROJECT_NAME/logs
+
+        # Exit code.
+        - exit $(docker wait ftchecker_n2n-oracle_1)
+
+    artifacts:
+        when: always
+
+        paths:
+            - ./logs
