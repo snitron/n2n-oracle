@@ -19,7 +19,7 @@ variables:
     SOLUTION_PATH: ../$CI_PROJECT_NAME
 
 before_script:
-    - echo $CI_JOB_TOKEN
+    - sudo echo $CI_JOB_TOKEN
     - echo $CI_REGISTRY
     - echo $CI_REGISTRY_IMAGE
 
