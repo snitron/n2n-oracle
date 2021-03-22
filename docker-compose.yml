@@ -6,5 +6,4 @@ services:
     container_name: oracle
     image: n2n-oracle:latest
     env_file: .env
-    volumes:
-        - ${ORACLE_DATA}/db:/data
+    command: "pyhton3 oracle.py"

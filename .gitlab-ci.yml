@@ -10,10 +10,12 @@ variables:
     GIT_DEPTH: "1"
     GIT_STRATEGY: clone
     GIT_SUBMODULE_STRATEGY: none
+    DOCKER_TLS_CERTDIR: ""
+
 
     # TAG and IMAGE are used by docker-compose.yml.
     TAG: latest
-    IMAGE: $CI_REGISTRY_IMAGE/ftchecker-final2021-n2n-oracle
+    IMAGE: registry.gitlab.com/onti-fintech/onti-2021-fintech/fintech2021003/n2n-oracle/ftchecker-final2021-n2n-oracle
   
     # Is used by docker-compose.yml.
     SOLUTION_PATH: ../$CI_PROJECT_NAME
