@@ -3,7 +3,7 @@ version: "3.3"
 services:
   oracle:
     build: .
-    image: test-docker-day2:latest
+    image: n2n-oracle:latest
     env_file: .env
     working_dir: /deployment/
     command: sh start_oracle.sh
