@@ -32,17 +32,14 @@ contract ValidatorsManagement{
         for (uint256 i = 0; i < validators.length; i++){
             if (validators[i] == validator){
                 is_validator_exist = true;
-                uint256 index = i;
-                for (uint j = index; j < validators.length-1; j++){
-                    validators[i] = validators[i+1];
-                }
+
+                validators[i] = validators[validators.length - 1];
                 validators.pop();
                 break;
             }
         }
-        
+
         require(is_validator_exist);
-        
     }
     
     function changeThreshold(uint256 thresh) external {

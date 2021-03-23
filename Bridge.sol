@@ -33,26 +33,31 @@ contract Bridge {
     address validatorsManager;
     address[] validators;
     
-    uint256 liquidity;
+    uint256 own_liquidity;
+    uint256 opposite_liquidity;
+    uint256 l;
+
+    bool is_left;
 
     Transaction[] transactions;
     
     event bridgeActionInitiated(address recipient, uint256 amount);
 
-    constructor(address _validatorsManager) public {
+    constructor(address _validatorsManager, bool _is_left) public {
         validatorsManager = _validatorsManager;
         administator = msg.sender;
+        is_left = _is_left;
     }
     
     function changeValidatorSet(address newvalidatorset) public isAdmin {
         validatorsManager = newvalidatorset;
-        liquidity = address(this).balance;
     }
     
     function addLiquidity() public payable isAdmin {
         require (msg.value != 0, "Invalid tokenss count.");
-        
-        liquidity += msg.value;
+        require (!is_left, "Only right side allowed");
+
+        own_liquidity += msg.value;
     }
     
     function isSenderValidator(address validator) private view returns (bool) {
@@ -67,16 +72,22 @@ contract Bridge {
     
     function updateLiquidityLimit(uint256 newlimit) external isAdmin {
         require (msg.sender == administator, "Prohibited.");
+        require (is_left, "Only left side allowed");
         
-        liquidity = newlimit;
+        own_liquidity = newlimit;
+        l = newlimit;
     }
     
     function getLiquidityLimit() public view returns (uint256) {
-        return liquidity;
+        if (is_left) {
+            return l;
+        } else {
+            return address(this).balance;
+        }
     }
     
     function commit(address payable recipient, uint256 amount, bytes32 id) external isValidator {
-        require (amount <= liquidity, "Too small liquidity.");
+        require (amount <= address(this).balance, "Too small liquidity.");
         
         address sender = msg.sender;
         bool is_operation_exist = false;
@@ -116,7 +127,9 @@ contract Bridge {
         if (acceptors_count >= ValidatorsManagement(validatorsManager).getThreshold()) {
             recipient.transfer(amount);
             
-            liquidity += amount;
+            opposite_liquidity += amount;
+            own_liquidity -= amount;
+            l += amount;
             
             transactions[oper_id] = transactions[transactions.length - 1];
             transactions.pop();
@@ -124,10 +137,15 @@ contract Bridge {
     }
  
     receive() payable external {
-        require (msg.value <= liquidity, "Too small liquidity.");
-        
-        liquidity -= msg.value;
-        
+        require (msg.value != 0, "Incorrect amount.");
+        require (msg.value <= l, "Too small liquidity.");
+
+        own_liquidity += msg.value;
+        opposite_liquidity -= msg.value;
+        l -= msg.value;
+
         emit bridgeActionInitiated(msg.sender, msg.value);
     }
 }
+
+64fc31b30000000000000000000000001fa6a78b2f0c7241d5aece23b274c72f3c5bbfa70000000000000000000000000000000000000000000000004563918244f40000f9ce602e1f508215f2b99e1be4d40eefacc8fb961759c77bd85e32eb2a90e2ff
