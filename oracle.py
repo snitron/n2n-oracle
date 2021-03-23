@@ -60,9 +60,9 @@ l_filter = l.events.bridgeActionInitiated.createFilter(fromBlock=hex(int(os.envi
 def send_update(amount, recipient, nonce, _id, gasprice, address, w3, account):
     c1 = w3.eth.contract(abi=ABI, address=web3.Web3.toChecksumAddress(address))
     c2_addr = c1.functions.getValidatorManagerAddress().call()
-    с2_abi = '[{"inputs":[{"internalType":"address[]","name":"_validators","type":"address[]"},{"internalType":"uint256","name":"_threshold","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"newvalidator","type":"address"}],"name":"addValidator","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"thresh","type":"uint256"}],"name":"changeThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getValidators","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"validator","type":"address"}],"name":"removeValidator","outputs":[],"stateMutability":"nonpayable","type":"function"}]'
+    c2_abi = '[{"inputs":[{"internalType":"address[]","name":"_validators","type":"address[]"},{"internalType":"uint256","name":"_threshold","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"newvalidator","type":"address"}],"name":"addValidator","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"thresh","type":"uint256"}],"name":"changeThreshold","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getThreshold","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getValidators","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"validator","type":"address"}],"name":"removeValidator","outputs":[],"stateMutability":"nonpayable","type":"function"}]'
 
-    c2 = w3.eth.contract(abi=с2_abi, address=web3.Web3.toChecksumAddress(c2_addr))
+    c2 = w3.eth.contract(abi=c2_abi, address=web3.Web3.toChecksumAddress(c2_addr))
     validators = c2.functions.getValidators().call()
     ############
     while account.address not in validators:
@@ -76,7 +76,7 @@ def send_update(amount, recipient, nonce, _id, gasprice, address, w3, account):
              'chainId': w3.eth.chain_id,
              'gas': int(w3.eth.getBlock('latest').gasLimit * 0.95),
              'gasPrice': int(gasprice),
-             'nonce': nonce + 1,
+             'nonce': nonce,
              "value": 0,
              }
         )
