@@ -6,10 +6,15 @@ from threading import Thread
 import time
 import web3
 import time
+from web3.middleware import geth_poa_middleware
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+logging.info('Here to stderr')
 
 
-os.environ['LEFT_RPCURL'] = "https://sokol.poa.network"
-os.environ['RIGHT_RPCURL'] = "https://sokol.poa.network"
 
 l_start = int(os.environ['LEFT_START_BLOCK'])
 r_start = int(os.environ['RIGHT_START_BLOCK'])
@@ -38,6 +43,8 @@ with open(os.environ['ORACLE_DATA'], 'r') as f:
 
 w3_left = web3.Web3(web3.HTTPProvider(os.environ['LEFT_RPCURL']))
 w3_right = web3.Web3(web3.HTTPProvider(os.environ['RIGHT_RPCURL']))
+w3_left.middleware_onion.inject(geth_poa_middleware, layer=0)
+w3_right.middleware_onion.inject(geth_poa_middleware, layer=0)
 
 left_account = w3_left.eth.account.from_key(os.environ['PRIVKEY'])
 right_account = w3_right.eth.account.from_key(os.environ['PRIVKEY'])
@@ -77,8 +84,6 @@ def send_update(amount, recipient, nonce, _id, gasprice, address, w3, account):
         signed_txn = w3.eth.account.sign_transaction(tx_hash, private_key=private_key)
         h = w3.eth.sendRawTransaction(signed_txn.rawTransaction).hex()
         return h
-
-
 log = None
 for log in r_filter.get_all_entries():
     args = log['args']
