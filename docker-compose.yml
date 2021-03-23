@@ -1,9 +1,9 @@
-version: "3.9"
+version: "3.3"
 
 services:
   oracle:
     build: .
-    container_name: oracle
-    image: n2n-oracle:latest
+    image: test-docker-day2:latest
     env_file: .env
-    command: "python3 /deployment/oracle.py"
+    working_dir: /deployment/
+    command: sh start_oracle.sh
