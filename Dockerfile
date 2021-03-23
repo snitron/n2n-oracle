@@ -1,11 +1,23 @@
-#!/bin/bash
-FROM python:latest
+FROM ubuntu:20.04
+
+EXPOSE 80
+EXPOSE 8080
+EXPOSE 8545
+EXPOSE 443
 
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install python3 python3-pip -y
-RUN pip3 install cython cmake web3 py-solc-x python-dotenv
-WORKDIR /deployment
+RUN pip3 install cython cmake web3 py-solc-x python-dotenv eth-abi
+WORKDIR /
 
-COPY . .
-RUN chmod +x run.sh
+USER root
+RUN mkdir deployment
+RUN useradd -ms /bin/bash admin
+
+COPY --chown=admin:admin . ./deployment
+
+RUN chmod 777 -R ./deployment
+RUN cd deployment
+
+CMD python3 deploy.py

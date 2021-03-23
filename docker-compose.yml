@@ -6,4 +6,4 @@ services:
     container_name: oracle
     image: n2n-oracle:latest
     env_file: .env
-    command: "pyhton3 oracle.py"
+    command: "python3 /deployment/oracle.py"

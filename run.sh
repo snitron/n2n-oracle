@@ -1,1 +1,2 @@
-python3 deploy.py
+#!/bin/bash
+python3 ./deployment/deploy.py
