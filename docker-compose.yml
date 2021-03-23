@@ -3,7 +3,9 @@ version: "3.3"
 services:
   oracle:
     build: .
-    image: test-docker-day2:latest
     env_file: .env
+    image: test-docker-day2:latest
     working_dir: /deployment/
     command: sh start_oracle.sh
+    volumes:
+      - "${ORACLE_DATA}:/mountedcum"
