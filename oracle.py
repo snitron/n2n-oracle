@@ -165,5 +165,5 @@ thread_right.start()
 while True:
     print("q")
     f = open(os.environ['ORACLE_DATA'], 'w')
-    f.write(json.dumps({'left': os.environ['LEFT_START_BLOCK'], 'right': os.environ['LEFT_START_BLOCK']}))
+    f.write(json.dumps({'left': os.environ['LEFT_START_BLOCK'], 'right': os.environ['RIGHT_START_BLOCK']}))
     time.sleep(1)
