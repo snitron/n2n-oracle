@@ -67,7 +67,7 @@ def send_update(amount, recipient, nonce, _id, gasprice, address, w3, account):
     ############
     while account.address not in validators:
         time.sleep(5)
-        validators = c2.functions.getValidators()
+        validators = c2.functions.getValidators().call()
 
     if account.address in validators:
         print(account.address, address, recipient)
