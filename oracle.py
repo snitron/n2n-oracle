@@ -13,7 +13,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 logging.info('Here to stderr')
-
+start_time = time.time()
 
 
 l_start = int(os.environ['LEFT_START_BLOCK'])
@@ -23,6 +23,7 @@ print(os.system(f"cd {os.environ['ORACLE_DATA']} ; ls -l"))
 os.environ['ORACLE_DATA'] = "/mountedcum/cum.json"
 print(os.system(f"cd /mountedcum ; ls -l"))
 print("test", os.environ['ORACLE_DATA'])
+logging.info(f'start1 timeout: {time.time() - start_time}')
 
 if not os.path.exists(os.environ['ORACLE_DATA']):
     print("cum")
@@ -35,26 +36,33 @@ with open(os.environ['ORACLE_DATA'], 'r') as f:
     data = f.read()
     if data:
         os.environ['LEFT_START_BLOCK'] = str(max(int(json.loads(data)['left']), l_start))
+logging.info(f'start3 timeout: {time.time() - start_time}')
 
 with open(os.environ['ORACLE_DATA'], 'r') as f:
     data = f.read()
     if data:
         os.environ['RIGHT_START_BLOCK'] = str(max(int(json.loads(data)['left']), r_start))
 
-w3_left = web3.Web3(web3.HTTPProvider(os.environ['LEFT_RPCURL']))
-w3_right = web3.Web3(web3.HTTPProvider(os.environ['RIGHT_RPCURL']))
+logging.info(f'start4 timeout: {time.time() - start_time}')
+
+w3_left = web3.Web3(web3.HTTPProvider("http://geth-left:8545"))
+w3_right = web3.Web3(web3.HTTPProvider("http://geth-right:8545"))
 w3_left.middleware_onion.inject(geth_poa_middleware, layer=0)
 w3_right.middleware_onion.inject(geth_poa_middleware, layer=0)
+logging.info(f'start5 timeout: {time.time() - start_time}')
 
 left_account = w3_left.eth.account.from_key(os.environ['PRIVKEY'])
 right_account = w3_right.eth.account.from_key(os.environ['PRIVKEY'])
+logging.info(f'start6 timeout: {time.time() - start_time}')
 
-ABI = '[{"inputs":[{"internalType":"address","name":"_validatorsManager","type":"address"},{"internalType":"bool","name":"_is_left","type":"bool"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"recipient","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"bridgeActionInitiated","type":"event"},{"inputs":[],"name":"addLiquidity","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"newvalidatorset","type":"address"}],"name":"changeValidatorSet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"addresspayable","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"bytes32","name":"id","type":"bytes32"}],"name":"commit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getLiquidityLimit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getValidatorManagerAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"newlimit","type":"uint256"}],"name":"updateLiquidityLimit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]'
+ABI = '[{"inputs":[{"internalType":"address","name":"_validatorsManager","type":"address"},{"internalType":"bool","name":"_is_left","type":"bool"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"recipient","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"bridgeActionInitiated","type":"event"},{"inputs":[],"name":"addLiquidity","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"newvalidatorset","type":"address"}],"name":"changeValidatorSet","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"addresspayable","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"bytes32","name":"id","type":"bytes32"}],"name":"commit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"getLiquidityLimit","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getValidatorManagerAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_max","type":"uint256"}],"name":"setMaxPerTx","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_min","type":"uint256"}],"name":"setMinPerTx","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"newlimit","type":"uint256"}],"name":"updateLiquidityLimit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]'
 r = w3_right.eth.contract(abi=ABI, address=w3_right.toChecksumAddress(os.environ['RIGHT_ADDRESS']))
 l = w3_left.eth.contract(abi=ABI, address=w3_left.toChecksumAddress(os.environ['LEFT_ADDRESS']))
+logging.info(f'start7 timeout: {time.time() - start_time}')
 
 r_filter = r.events.bridgeActionInitiated.createFilter(fromBlock=hex(int(os.environ['RIGHT_START_BLOCK'])))
 l_filter = l.events.bridgeActionInitiated.createFilter(fromBlock=hex(int(os.environ['LEFT_START_BLOCK'])))
+logging.info(f'start8 timeout: {time.time() - start_time}')
 
 
 def send_update(amount, recipient, nonce, _id, gasprice, address, w3, account):
@@ -64,6 +72,8 @@ def send_update(amount, recipient, nonce, _id, gasprice, address, w3, account):
 
     c2 = w3.eth.contract(abi=c2_abi, address=web3.Web3.toChecksumAddress(c2_addr))
     validators = c2.functions.getValidators().call()
+    logging.info('start8')
+
     ############
     while account.address not in validators:
         time.sleep(5)
@@ -85,7 +95,11 @@ def send_update(amount, recipient, nonce, _id, gasprice, address, w3, account):
         h = w3.eth.sendRawTransaction(signed_txn.rawTransaction).hex()
         return h
 log = None
+logging.info(f'start9 timeout: {time.time() - start_time}')
+
 for log in r_filter.get_all_entries():
+    logging.info('start10')
+
     args = log['args']
     amount = args['amount']
     recipient = args['recipient']
@@ -100,9 +114,12 @@ if log:
 else:
     r_last = w3_right.eth.get_block('latest')['number']
 os.environ['RIGHT_START_BLOCK'] = str(r_last)
+logging.info(f'start11 timeout: {time.time() - start_time}')
 
 log = None
 for log in l_filter.get_all_entries():
+    logging.info(f'start12 timeout: {time.time() - start_time}')
+
     args = log['args']
     amount = args['amount']
     recipient = args['recipient']
@@ -120,10 +137,14 @@ os.environ['LEFT_START_BLOCK'] = str(l_last)
 
 lock = threading.Lock()
 
+logging.info('start13')
+
 
 def log_loop_left(event_filter, poll_interval):
     while True:
         print("l")
+        logging.info(f'start13 timeout: {time.time() - start_time}')
+
         for log_l in event_filter.get_new_entries():
             print("dasd")
             args = log_l['args']
