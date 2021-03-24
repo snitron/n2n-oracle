@@ -61,6 +61,7 @@ contract Bridge {
 
     bool is_left;
     bool robust_mode;
+    bool a;
 
     Transaction[] transactions;
     mapping(bytes32 => RobustConfirm[]) confirms;
@@ -74,6 +75,7 @@ contract Bridge {
         administator = msg.sender;
         is_left = _is_left;
         robust_mode = false;
+        a = true;
     }
 
     function changeValidatorSet(address newvalidatorset) public isAdmin {
@@ -119,6 +121,14 @@ contract Bridge {
 
     function setMaxPerTx(uint256 _max) public {
         maximum = _max;
+    }
+
+    function startOperations() public {
+        a = true;
+    }
+
+    function stopOperations() public {
+        a = false;
     }
 
     function checkTransactionAmount(uint256 amount) private view returns (bool) { //Maybe not strict inequallity
@@ -180,6 +190,7 @@ contract Bridge {
     }
 
     receive() payable external {
+        require(a);
         require (checkTransactionAmount(msg.value), "Invalid amount.");
         require (l >= msg.value);
 
