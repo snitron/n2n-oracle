@@ -39,7 +39,7 @@ with open(os.environ['ORACLE_DATA'], 'r') as f:
 with open(os.environ['ORACLE_DATA'], 'r') as f:
     data = f.read()
     if data:
-        os.environ['RIGHT_START_BLOCK'] = str(max(int(json.loads(data)['left']), r_start))
+        os.environ['RIGHT_START_BLOCK'] = str(max(int(json.loads(data)['right']), r_start))
 
 w3_left = web3.Web3(web3.HTTPProvider(os.environ['LEFT_RPCURL']))
 w3_right = web3.Web3(web3.HTTPProvider(os.environ['RIGHT_RPCURL']))
@@ -67,7 +67,7 @@ def send_update(amount, recipient, nonce, _id, gasprice, address, w3, account):
     ############
     while account.address not in validators:
         time.sleep(5)
-        validators = c2.functions.getValidators()
+        validators = c2.functions.getValidators().call()
 
     if account.address in validators:
         print(account.address, address, recipient)
@@ -165,5 +165,5 @@ thread_right.start()
 while True:
     print("q")
     f = open(os.environ['ORACLE_DATA'], 'w')
-    f.write(json.dumps({'left': os.environ['LEFT_START_BLOCK'], 'right': os.environ['LEFT_START_BLOCK']}))
+    f.write(json.dumps({'left': os.environ['LEFT_START_BLOCK'], 'right': os.environ['RIGHT_START_BLOCK']}))
     time.sleep(1)

@@ -13,14 +13,14 @@ WORKDIR /
 
 USER root
 RUN mkdir deployment
+RUN mkdir tools
 RUN mkdir mountedcum
 RUN useradd -ms /bin/bash admin
 
+COPY --chown=admin:admin applyCommits.py ./tools
 COPY --chown=admin:admin . ./deployment
 
 RUN chmod 777 -R ./deployment
 RUN chmod 777 -R ./mountedcum
 
 RUN cd deployment
-
-CMD python3 deploy.py
