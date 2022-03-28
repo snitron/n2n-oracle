@@ -1,7 +1,7 @@
 Задача "Мост для перевода средств между двумя блокчейн сетями"
 ====
 
-Команда KamikadzY @snitron @HKTRp @sinne0r
+Команда KamikadzY [@snitron](https://github.com/snitron) [@HKTRp](https://github.com/snitron) [@sinne0r](https://github.com/sinne0r)
 
 ## Ввведение
 
