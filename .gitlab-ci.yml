@@ -21,6 +21,10 @@ variables:
     SOLUTION_PATH: ../$CI_PROJECT_NAME
 
 before_script:
+    - sudo echo $CI_JOB_TOKEN
+    - echo $CI_REGISTRY
+    - echo $CI_REGISTRY_IMAGE
+
     # Install docker compose and ssh.
     - apk add --no-cache docker-compose git openssh-client
 
